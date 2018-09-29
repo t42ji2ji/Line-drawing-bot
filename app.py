@@ -46,4 +46,5 @@ def saveimage():
 
 if __name__ == '__main__':
     server_port = int(os.environ.get('PORT', 4998))
-    app.run(debug=True, port=server_port)
+    # app.run(debug=True, port=server_port)
+    app.run(host='0.0.0.0', port=port)
