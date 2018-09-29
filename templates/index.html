@@ -1,0 +1,184 @@
+{% extends "bootstrap/base.html" %}
+
+{%- block metas %}
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+{%- endblock metas %}
+
+<!--追加-->
+{% block scripts %}
+{{super()}}
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+<script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    const canvas = document.querySelector('#canvas');
+    const signaturePad = new SignaturePad(canvas, {
+      backgroundColor: 'rgba(238,238,238, 0)',
+      penColor: "rgb(255, 30, 30)",
+      minWidth: 2,
+      maxWidth: 2.8,
+    });
+
+    
+
+    $(window).on('load', function(){
+      canvas.setAttribute('width', $('.container').width());
+      canvas.setAttribute('height', window.innerHeight - $('#btn').outerHeight() -$('#undo').outerHeight() - 30);
+      signaturePad.clear();
+      liff.init(function(data) {})
+    });
+
+    $('#undo').on('click', function() {
+      var data = signaturePad.toData();
+      if (data) {
+        data.pop(); // remove the last dot or line
+        signaturePad.fromData(data);
+      }
+    });
+
+    $(document).ready(function() {
+      $(".color-g-in a").click(function() {
+        var $c = $('.color-g-in a')
+        $c.css("box-shadow", "")
+        const color = $(this).css( "background-color" )
+        var color_trans = color.replace(')', ', 0.5)').replace('rgb', 'rgba');
+        $(this).css("box-shadow", "0 0 0 2px " + color_trans)
+        // $(this).text(color)
+        signaturePad.penColor = color
+      });
+    });
+  </script>
+
+<script>
+
+  $('#share').on('click', function() {
+    $.ajax({
+      type: 'POST',
+      url: '/saveimage',
+      data: {
+        // 'image': signaturePad.toDataURL('image/jpeg')
+        'image': signaturePad.toDataURL()
+      },
+      success: function (res, status) {
+        liff.getProfile().then(function (profile) {
+          liff.sendMessages([
+            {
+              type: 'image',
+              originalContentUrl: 'https://' + document.domain + '/imgs/' + res + '.png',
+              previewImageUrl: 'https://' + document.domain + '/imgs/' + res + '_240.png'
+              // originalContentUrl: 'https://' + document.domain + '/imgs/' + '213.png',
+              // previewImageUrl: 'https://' + document.domain + '/imgs/' + '240.png'
+            },
+            {
+              type: 'text',
+              text: 'From:' + profile.displayName
+            }
+          ]).then(function () {
+            liff.closeWindow();
+          }).catch(function (error) {
+            window.alert('Error sending message: ' + error.message);
+          });
+        }).catch(function (error) {
+            window.alert("Error getting profile: " + error.message);
+        });
+      },
+      error: function (res) {
+        window.alert('Error saving image: ' + res.status);
+      },
+      complete: function(data) {
+      }
+    });
+  });
+</script>
+{% endblock %}
+<!--追加ここまで-->
+
+{% block title %}一起畫貼圖{% endblock %}
+
+<!--追加-->
+{% block content %}
+<div class="container">
+  <div class="color-g">
+    <div class="color-g-in">
+      <a style = "background-color: red" class="color"></a>
+      <a style = "background-color: orange" class="color"></a>
+      <a style = "background-color: blue" class="color"></a>
+      <a style = "background-color: blueviolet" class="color"></a>
+      <a style = "background-color: green" class="color"></a>
+      <a style = "background-color: black" class="color"></a>
+    </div>
+  </div>
+  <canvas id="canvas"></canvas>
+  <div class="button-g">
+      <button id="share" type="button" class="btn btn-primary btn-block">分享</button>
+      <button id="undo" type="button" class="btn btn-primary btn-block">上一步</button>
+  </div>
+
+</div>
+{% endblock %}
+<!--追加ここまで-->
+{% block styles %}
+<style>
+    /* * {
+      border: 1px solid #000;
+    } */
+    body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    }
+    .button-g{
+      display: flex;
+      justify-content: center;
+      align-self: center;
+    }
+    .color-g{
+      position: absolute;
+      left: 50%;
+    }
+    .color-g-in{
+      position: relative;
+      left: -50%;
+      display: flex;
+      justify-content: center;
+      align-self: center;
+    }
+    .color{
+      width: 1.3rem;
+      height: 1.3rem;
+      border-radius: 1.3rem;
+      /* border: 5px solid rgba(0, 0, 0, 0.5); */
+      margin: 10px;
+      background-color: white;
+    }
+    .color-outline{
+      box-shadow: 0 0 0 2px rgba(255, 214, 78, 0.692);
+    }
+    .btn{
+      width : 150px ;
+      height: 50px;
+      margin: 0 5px 0 5px;
+      flex: 1 1 auto;
+      background-color: #4CAF50; /* Green */
+      border-radius: 50px;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+    }
+    #share {
+      background-color: rgb(99, 193, 255);
+    }
+    #undo {
+      background-color: rgb(255, 84, 84);
+    }
+</style>
+{% endblock %}
+
+
