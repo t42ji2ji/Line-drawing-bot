@@ -59,9 +59,23 @@
 
     $(document).ready(function() {
       $(".color-g-in a").click(function() {
+
+        //drawing mode
+        var ctx = canvas.getContext('2d');
+        ctx.globalCompositeOperation = 'source-over';
+
         var $c = $('.color-g-in a')
         $c.css("box-shadow", "")
         const color = $(this).css( "background-color" )
+        console.log(color);
+
+        if(color == 'rgb(255, 255, 255)'){
+          console.log("iswhite");
+          ctx.globalCompositeOperation = 'destination-out';
+        } else {
+          console.log("no");
+        }
+
         var color_trans = color.replace(')', ', 0.5)').replace('rgb', 'rgba');
         $(this).css("box-shadow", "0 0 0 2px " + color_trans)
         // $(this).text(color)
@@ -152,6 +166,7 @@
       <a style = "background-color: blueviolet" class="color"></a>
       <a style = "background-color: green" class="color"></a>
       <a style = "background-color: black" class="color"></a>
+      <a style = "background-color: white; border: 1px solid darkgray" class="color"></a>
     </div>
   </div>
   <div id="slider"></div>
