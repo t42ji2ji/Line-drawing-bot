@@ -7,6 +7,7 @@
 <!--追加-->
 {% block scripts %}
 {{super()}}
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -15,22 +16,24 @@
 <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script>
+    const names = ["小玉","放火","呱吉","火車","茄子","茄子蛋","青蛙","老虎","松鼠","柯P","丁守中","姚文智","蔡英文","賴清德","火雞","鯨魚","啄木鳥","斑馬","老鼠","豬","大猩猩","山羊","太陽餅","鱷魚","太陽花","傻眼貓咪","藍瘦香菇","撞到腳","長途夜車","搞事情","電腦","電動","機器人","台灣","滑鼠","手機","平板","貓頭鷹","皮卡丘","蛋黃哥","蘋果","橘子","柚子","香蕉","月亮","烤肉","太陽","水蜜桃","影子","愛心","企鵝","無尾熊","河童","寶可夢","雲朵","Iphone","嘴唇","手錶","衣服","雨衣","眼鏡","眼睛","耳朵","鼻屎","日曆","鋼琴","開水","七龍珠","牛排","雞腿","魯夫","大門","燈泡","電話","阿嬤","總統","信用卡","熊大","超人","蝙蝠俠","鋼鐵人","綠巨人","米老鼠","唐老鴨","耳機","相機","神燈","紅包","鞭炮","熱狗","麵包","菠蘿麵包","牛角麵包","法國麵包","鱷魚","蝙蝠","帽子","字典","愛心","金魚","光劍","喇吧","小丑","雨傘","盆栽","眼鏡","蛋糕","賽車","滅火器","螞蟻","蜻蜓","國旗","招財貓","犀牛","小偷","飛機","皇帝","星際大戰","毛衣","雪貂"]
     const pen_mini = 2
     const pen_max = 10
     const canvas = document.querySelector('#canvas');
     const signaturePad = new SignaturePad(canvas, {
-      backgroundColor: 'rgba(238,238,238, 0)',
+      backgroundColor: 'rgba(245, 245, 245, 0)',
       penColor: "rgb(255, 30, 30)",
       minWidth: 2,
       maxWidth: 2.8,
     });
 
-    
-
     $(window).on('load', function(){
       canvas.setAttribute('width', $('.container').width());
-      canvas.setAttribute('height', window.innerHeight - $('#btn').outerHeight() -$('#undo').outerHeight() - 30);
+      canvas.setAttribute('height', window.innerHeight - $('.button-g').outerHeight() - 30);
       signaturePad.clear();
+      var item = names[Math.floor(Math.random()*names.length)];
+      console.log(item);
+      $(".cover h2").html(item + " <span class='fas fa-pencil-alt fa-xs' style='font-size:1rem'></span>")
       $("#slider").slider({
         orientation: "vertical",
         min: 0,
@@ -68,8 +71,18 @@
   </script>
 
 <script>
+  $('#change').on('click', function() {
+    var $cover = $('.cover')
+    $cover.css("display", "block")
+  })
 
+  $('#know').on('click', function() {
+    var $cover = $('.cover')
+    $cover.css("display", "none")
+  })
+  const num = Math.floor(Math.random() * 100000000) + 20
   $('#share').on('click', function() {
+    $('.loading').css("display", "flex")
     $.ajax({
       type: 'POST',
       url: '/saveimage',
@@ -89,16 +102,19 @@
             },
             {
               type: 'text',
-              text: 'From:' + profile.displayName
+              text: '畫家：' + profile.displayName + '\n作品：' + $(".cover h2").text() + '\n自動估價：' + num.toString() +' NTD'
             }
           ]).then(function () {
             liff.closeWindow();
           }).catch(function (error) {
             window.alert('Error sending message: ' + error.message);
+            
           });
         }).catch(function (error) {
             window.alert("Error getting profile: " + error.message);
         });
+        $('.loading').css("display", "none")
+
       },
       error: function (res) {
         window.alert('Error saving image: ' + res.status);
@@ -115,6 +131,18 @@
 
 <!--追加-->
 {% block content %}
+<div class="cover">
+  <div class="landing_page">
+      <h3> 題目 </h3>
+      <h2 id="question" contenteditable="true"> 狐狸 </h2>
+      <a class="btn" id="know"> 我知道了</a>
+    </div>
+</div>
+
+<div class="cover loading" style="color: white; margin: 0 auto;">
+  <h3> 上傳中... </h3>
+</div>
+
 <div class="container">
   <div class="color-g">
     <div class="color-g-in">
@@ -130,6 +158,7 @@
   <canvas id="canvas"></canvas>
   <div class="button-g">
       <button id="share" type="button" class="btn btn-primary btn-block">分享</button>
+      <button id="change" type="button" class="btn btn-primary btn-block">改題目</button>
       <button id="undo" type="button" class="btn btn-primary btn-block">上一步</button>
   </div>
 
@@ -141,6 +170,21 @@
     /* * {
       border: 1px solid #000;
     } */
+
+    /*for contenteditable*/
+    /* * {
+      -webkit-user-modify:read-write;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    input,
+    textarea,
+    [contenteditable] {
+        -webkit-user-select: text;
+        user-select: text;
+    } */
+
     body {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -148,6 +192,59 @@
     -ms-user-select: none;
     -moz-user-select: none;
     user-select: none;
+    margin: 0;
+    }
+
+    .container{
+      height: 100%;
+      padding: 8px;
+    }
+
+    .cover {
+      background-color: rgba(0, 0, 0, 0.8);
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      z-index: 999;
+    }
+
+    .loading{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      display: none;
+    }
+
+    
+
+    .landing_page{
+      width: 90%;
+      height: 60%;
+      left: 0;
+      right: 0;
+      top: 20%;
+      z-index: 1000;
+      margin: 0 auto;
+      position: absolute;
+      /* background-color: rgb(132, 73, 255); */
+      background-image: linear-gradient(216deg, #783DFF 0%, #6925AB 100%);
+      border-radius: 5px;
+      color: white;
+      text-align: center;
+    }
+
+    .landing_page h2 {
+      -webkit-user-select:text;
+      font-size: 3rem;
+    }
+
+    .landing_page a {
+      text-decoration: none;
+      font-color: white;
+      width : 100px ;
+      height: 20px;
+      background: rgba(255,255,255,0.64);
+      background-image: linear-gradient(-213deg, rgba(132,73,225,0.47) 0%, rgba(109,47,206,0.53) 100%);
     }
 
     #slider {
@@ -160,6 +257,7 @@
       display: flex;
       justify-content: center;
       align-self: center;
+      margin-top: 5px;
     }
     .color-g{
       position: absolute;
@@ -192,20 +290,18 @@
       border-radius: 50px;
       border: none;
       color: white;
-      padding: 15px 32px;
+      padding: 15px 20px;
       text-align: center;
       text-decoration: none;
       display: inline-block;
       font-size: 16px;
     }
     #share {
-      background-color: rgb(99, 193, 255);
+      background-color: #783DFF;
     }
     #undo {
       background-color: rgb(255, 84, 84);
     }
-
-
 </style>
 {% endblock %}
 
