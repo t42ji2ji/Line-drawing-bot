@@ -8,9 +8,15 @@
 {% block scripts %}
 {{super()}}
   <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
 <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
   <script>
+    const pen_mini = 2
+    const pen_max = 10
     const canvas = document.querySelector('#canvas');
     const signaturePad = new SignaturePad(canvas, {
       backgroundColor: 'rgba(238,238,238, 0)',
@@ -25,6 +31,18 @@
       canvas.setAttribute('width', $('.container').width());
       canvas.setAttribute('height', window.innerHeight - $('#btn').outerHeight() -$('#undo').outerHeight() - 30);
       signaturePad.clear();
+      $("#slider").slider({
+        orientation: "vertical",
+        min: 0,
+        max: 100,
+        value: 20,
+        slide: function( event, ui ) {
+          console.log(ui.value);
+          var pen_size = ((pen_max - pen_mini) * ui.value / 100 ) + pen_mini 
+          signaturePad.minWidth = pen_size
+          signaturePad.maxWidth = pen_size + 0.8
+        }
+      });
       liff.init(function(data) {})
     });
 
@@ -108,6 +126,7 @@
       <a style = "background-color: black" class="color"></a>
     </div>
   </div>
+  <div id="slider"></div>
   <canvas id="canvas"></canvas>
   <div class="button-g">
       <button id="share" type="button" class="btn btn-primary btn-block">分享</button>
@@ -130,6 +149,13 @@
     -moz-user-select: none;
     user-select: none;
     }
+
+    #slider {
+      position: absolute;
+      top: 20%;
+      height: 50%;  
+    }
+
     .button-g{
       display: flex;
       justify-content: center;
@@ -178,6 +204,8 @@
     #undo {
       background-color: rgb(255, 84, 84);
     }
+
+
 </style>
 {% endblock %}
 
