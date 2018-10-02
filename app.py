@@ -19,11 +19,17 @@ bootstrap = Bootstrap(app)
 def do_get():
     return render_template('index.html')
 
+@app.route('/getname', methods=['POST'])
+def getname():
+    event = request.form.to_dict()
+    print(event['name'])
+    return make_response(event['name'], 200)
+
+
 # 追加
 @app.route('/saveimage', methods=['POST'])
 def saveimage():
     event = request.form.to_dict()
-
     dir_name = 'static/imgs'
     img_name = uuid.uuid4().hex
 
