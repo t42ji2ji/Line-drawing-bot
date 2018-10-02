@@ -19,7 +19,8 @@
 {% block scripts %}
 {{super()}}
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
+  <script src="{{ url_for('static', filename='sg_min_new.js') }}"></script>
+
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
@@ -43,7 +44,6 @@
       canvas.setAttribute('height', window.innerHeight - $('.button-g').outerHeight() - 30);
       signaturePad.clear();
       var item = names[Math.floor(Math.random()*names.length)];
-      console.log(item);
       $(".cover h2").html(item + " <span class='fas fa-pencil-alt fa-xs' style='font-size:1rem'></span>")
       $("#slider").slider({
         orientation: "vertical",
@@ -52,7 +52,6 @@
         value: 20,
         throttle: false,
         slide: function( event, ui ) {
-          console.log(ui.value);
           var pen_size = ((pen_max - pen_mini) * ui.value / 100 ) + pen_mini 
           signaturePad.minWidth = pen_size
           signaturePad.maxWidth = pen_size + 0.8
@@ -63,9 +62,11 @@
 
     $('#undo').on('click', function() {
       var data = signaturePad.toData();
+      console.log(data);
       if (data) {
         data.pop(); // remove the last dot or line
         signaturePad.fromData(data);
+        console.log(data);
       }
     });
 
@@ -79,13 +80,10 @@
         var $c = $('.color-g-in a')
         $c.css("box-shadow", "")
         const color = $(this).css( "background-color" )
-        console.log(color);
 
         if(color == 'rgb(255, 255, 255)'){
-          console.log("iswhite");
           ctx.globalCompositeOperation = 'destination-out';
         } else {
-          console.log("no");
         }
 
         var color_trans = color.replace(')', ', 0.5)').replace('rgb', 'rgba');

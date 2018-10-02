@@ -10,7 +10,7 @@ import warnings
 warnings.simplefilter('error', Image.DecompressionBombWarning)
 
 # app = Flask(__name__)
-app = Flask(__name__, static_folder='imgs')
+app = Flask(__name__, static_folder='static')
 
 bootstrap = Bootstrap(app)
 
@@ -24,7 +24,7 @@ def do_get():
 def saveimage():
     event = request.form.to_dict()
 
-    dir_name = 'imgs'
+    dir_name = 'static/imgs'
     img_name = uuid.uuid4().hex
 
     # Saving image in the 'imgs' folder temporarily. Should be deleted after a certain period of time
