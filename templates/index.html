@@ -3,8 +3,8 @@
 {%- block metas %}
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 {%- endblock metas %}
-<head>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
+
+{% block head %}
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-126651542-1"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -13,14 +13,13 @@
 
     gtag('config', 'UA-126651542-1');
   </script>
-</head>
+{% endblock %}
 
 <!--追加-->
 {% block scripts %}
 {{super()}}
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
   <script src="{{ url_for('static', filename='sg_min_new.js') }}"></script>
-
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
   <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
@@ -116,6 +115,13 @@
       },
       success: function (res, status) {
         liff.getProfile().then(function (profile) {
+          $.ajax({
+            type: 'POST',
+            url: '/getname',
+            data: {
+              'name': profile.displayName
+            }
+          })
           liff.sendMessages([
             {
               type: 'image',
