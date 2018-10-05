@@ -19,6 +19,10 @@ bootstrap = Bootstrap(app)
 def do_get():
     return render_template('index.html')
 
+@app.route('/test')
+def test():
+    return render_template('test.html')
+
 @app.route('/getname', methods=['POST'])
 def getname():
     event = request.form.to_dict()
